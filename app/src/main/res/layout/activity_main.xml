@@ -28,7 +28,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
-        android:layout_margin="@dimen/larger_margin"
+        android:layout_margin="@dimen/larger_margin_bottom"
+        style="@style/TextAppearance.AppCompat.Large"
         app:srcCompat="@drawable/stop"/>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -36,7 +37,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|center"
-        android:layout_margin="@dimen/larger_margin"
+        android:layout_margin="@dimen/larger_margin_bottom"
         app:srcCompat="@drawable/ic_play"/>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -44,7 +45,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|start"
-        android:layout_margin="@dimen/larger_margin"
+        android:layout_margin="@dimen/larger_margin_bottom"
         app:srcCompat="@drawable/ic_pause"/>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

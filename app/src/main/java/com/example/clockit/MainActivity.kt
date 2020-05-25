@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.widget.ProgressBar
 import com.example.clockit.util.UtilPreference
 
 import kotlinx.android.synthetic.main.activity_main.*
@@ -18,7 +19,6 @@ class MainActivity : AppCompatActivity() {
     enum class Timer{
         stopped,ticking,paused
     }
-
     private lateinit var timer: CountDownTimer
     private  var TimeLenInSecs:Long=0
     private var stateoftime=Timer.stopped
@@ -27,7 +27,6 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
-
         supportActionBar?.setIcon(R.drawable.ic_timer)
         supportActionBar?.title="  ClockKit"
 
@@ -130,22 +129,25 @@ class MainActivity : AppCompatActivity() {
         tvtime.text="$minutessUntilFinished:${
         if (secondsStr.length==2) secondsStr
         else "0"+secondsStr}"
-        waveLoadingView.progressValue=(TimeLenInSecs-remainingTime).toInt()
+        waveLoadingView.progressValue=60-(TimeLenInSecs-remainingTime).toInt()
     }
 
     private fun updateThebtns(){
         when(stateoftime){
             Timer.ticking->{
+                waveLoadingView.startAnimation()
                 fab_play.isEnabled=false
                 fab_pause.isEnabled=true
                 fab_stop.isEnabled=true
             }
             Timer.stopped->{
+                waveLoadingView.pauseAnimation()
                 fab_play.isEnabled=true
                 fab_pause.isEnabled=false
                 fab_stop.isEnabled=false
             }
             Timer.paused->{
+                waveLoadingView.pauseAnimation()
                 fab_play.isEnabled=true
                 fab_pause.isEnabled=false
                 fab_stop.isEnabled=true

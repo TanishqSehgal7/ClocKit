@@ -47,7 +47,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.276"
-        app:wlv_borderColor="@color/colorAccent"
+        app:wlv_borderColor="@android:color/holo_orange_light"
         app:wlv_borderWidth="3dp"
         app:wlv_progressValue="100"
         app:wlv_round_rectangle="true"
@@ -58,6 +58,6 @@
         app:wlv_titleCenterStrokeWidth="3dp"
         app:wlv_triangle_direction="north"
         app:wlv_waveAmplitude="70"
-        app:wlv_waveColor="@color/colorAccent" />
+        app:wlv_waveColor="@android:color/holo_orange_light" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
