@@ -1,20 +1,44 @@
 package com.example.clockit
 
-import android.content.IntentSender
+import android.app.AlarmManager
+import android.app.PendingIntent
+import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.os.CountDownTimer
 import androidx.appcompat.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
-import android.view.View
-import android.widget.ProgressBar
 import com.example.clockit.util.UtilPreference
 
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.content_main.*
-import java.sql.Time
+import java.util.*
 
 class MainActivity : AppCompatActivity() {
+
+    companion object{
+        fun setAlarm(context: Context,presentTime:Long,secondsRemaining:Long):Long{
+            val wakeTime=(presentTime+secondsRemaining)*1000
+            val alarmManager=context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+            val intent=Intent(context,TimerExpired::class.java)
+            val pendingIntent=PendingIntent.getBroadcast(context,0,intent,0)
+            alarmManager.setExact(AlarmManager.RTC_WAKEUP,wakeTime,pendingIntent)
+            UtilPreference.setAlarmTime(presentTime,context)
+            return wakeTime
+        }
+
+        fun alarmRemove(context: Context){
+            val intent=Intent(context,TimerExpired::class.java)
+            val pendingIntent=PendingIntent.getBroadcast(context,0,intent,0)
+            val alarmManager=context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+            alarmManager.cancel(pendingIntent)
+            UtilPreference.setAlarmTime(0,context)
+        }
+
+        val presentTime:Long
+        get() = Calendar.getInstance().timeInMillis/1000
+    }
 
     enum class Timer{
         stopped,ticking,paused
@@ -54,15 +78,20 @@ class MainActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         TimerInThis()
+        alarmRemove(this)
+        Notification.HideNotificationOfTime(this)
+
     }
 
     override fun onPause() {
         super.onPause()
         if (stateoftime==Timer.ticking){
             timer.cancel()
+            val wakeTime= setAlarm(this, presentTime,remainingTime)
+            Notification.ShowWhileTimerRunning(this,wakeTime)
         }
         else if (stateoftime==Timer.paused){
-            // make the timer run the background and show a notification
+            Notification.showPausedTimer(this)
         }
         UtilPreference.AssignPreviousLengthSeconds(TimeLenInSecs,this)
         UtilPreference.SetSecondsRemaining(remainingTime,this)
@@ -79,7 +108,12 @@ class MainActivity : AppCompatActivity() {
             UtilPreference.getSecondsRemaining(this)
         else
             TimeLenInSecs
-        if (stateoftime==Timer.ticking)
+        val alarmSetTime=UtilPreference.getAlarmAndTimeSet(this)
+        if (alarmSetTime>0)
+            remainingTime-= presentTime-alarmSetTime
+        if (remainingTime<=0)
+            onTimerFinished()
+        else if (stateoftime==Timer.ticking)
             startTime()
         updateThebtns()
         updateCountDownUI()
@@ -101,9 +135,8 @@ class MainActivity : AppCompatActivity() {
        stateoftime=Timer.ticking
         timer= object : CountDownTimer(remainingTime*1000,1000) {
             override fun onFinish() {
-
+                onTimerFinished()
             }
-
             override fun onTick(milisUntilFinished: Long) {
                 remainingTime=milisUntilFinished/1000
                 updateCountDownUI()
@@ -154,7 +187,6 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
-
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         // Inflate the menu; this adds items to the action bar if it is present.
