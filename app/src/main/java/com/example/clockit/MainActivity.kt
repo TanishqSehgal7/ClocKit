@@ -4,16 +4,18 @@ import android.app.AlarmManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.media.RingtoneManager
+import android.net.Uri
 import android.os.Bundle
 import android.os.CountDownTimer
-import androidx.appcompat.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
+import androidx.appcompat.app.AppCompatActivity
 import com.example.clockit.util.UtilPreference
-
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.content_main.*
 import java.util.*
+
 
 class MainActivity : AppCompatActivity() {
 
@@ -34,6 +36,15 @@ class MainActivity : AppCompatActivity() {
             val alarmManager=context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
             alarmManager.cancel(pendingIntent)
             UtilPreference.setAlarmTime(0,context)
+        }
+
+        fun ringAlarm(context: Context){
+//            val ring = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
+//            val mp = MediaPlayer.create(context, ring)
+//            mp.start()
+            val ring: Uri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALL)
+            val r = RingtoneManager.getRingtone(context, ring)
+            r.play()
         }
 
         val presentTime:Long
@@ -129,12 +140,14 @@ class MainActivity : AppCompatActivity() {
         remainingTime=TimeLenInSecs
         updateThebtns()
         updateCountDownUI()
+
     }
 
     private fun startTime(){
        stateoftime=Timer.ticking
         timer= object : CountDownTimer(remainingTime*1000,1000) {
             override fun onFinish() {
+                ringAlarm(this@MainActivity)
                 onTimerFinished()
             }
             override fun onTick(milisUntilFinished: Long) {
